@@ -1,16 +1,23 @@
+"use client";
+import { useCurrent } from "@/features/auth/api/useCurrent";
+import { useLogout } from "@/features/auth/api/useLogout";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 export default function Home() {
+  const router = useRouter();
+  const { data, isLoading } = useCurrent();
+  const { mutate } = useLogout();
+
+  useEffect(() => {
+    if (!data && !isLoading) {
+      router.push("/sign-in");
+    }
+  }, [isLoading, data]);
+
   return (
-    <div className="flex gap-4">
-      <Input />
-      <Button>primary</Button>
-      <Button variant="secondary">secondary</Button>
-      <Button variant="destructive">destructive</Button>
-      <Button variant="ghost">ghost</Button>
-      <Button variant="muted">muted</Button>
-      <Button variant="outline">outline</Button>
-      <Button variant="teritary">outline</Button>
+    <div className="">
+      <Button onClick={() => mutate()}>logout</Button>
     </div>
   );
 }
