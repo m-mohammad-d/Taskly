@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+const shabnam = localFont({
+  src: [
+    {
+      path: "./fonts/Shabnam.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Shabnam-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-shabnam",
 });
 
 export const metadata: Metadata = {
@@ -24,9 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fa" dir="rtl">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(shabnam.variable , "antialiased min-h-screen")}
+        style={{
+          fontFamily:
+            "var(--font-shabnam), var(--font-geist-sans), var(--font-geist-mono), Arial, sans-serif",
+        }}
       >
         {children}
       </body>
