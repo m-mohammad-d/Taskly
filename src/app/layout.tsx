@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
+import QueryProvider from "@/components/QueryProvider";
 const shabnam = localFont({
   src: [
     {
@@ -32,13 +32,12 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body
-        className={cn(shabnam.variable , "antialiased min-h-screen")}
+        className={cn(shabnam.variable, "min-h-screen antialiased")}
         style={{
-          fontFamily:
-            "var(--font-shabnam), var(--font-geist-sans), var(--font-geist-mono), Arial, sans-serif",
+          fontFamily: "var(--font-shabnam), var(--font-geist-sans), var(--font-geist-mono), Arial, sans-serif",
         }}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
