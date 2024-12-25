@@ -12,6 +12,8 @@ export const getCurrent = async () => {
 
     if (!session) return null;
 
+    client.setSession(session.value);
+
     const account = new Account(client);
 
     return await account.get();
