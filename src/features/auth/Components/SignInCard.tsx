@@ -16,7 +16,7 @@ import { useLogin } from "../api/useLogin";
 
 type FormData = z.infer<typeof signInSchema>;
 function SignInCard() {
-  const { mutate } = useLogin();
+  const { mutate, isPending } = useLogin();
   const form = useForm<FormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -45,7 +45,7 @@ function SignInCard() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="email" placeholder="ایمیل را وارد کنید" disabled={false} {...field} />
+                    <Input type="email" placeholder="ایمیل را وارد کنید" disabled={isPending} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -57,13 +57,13 @@ function SignInCard() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="password" placeholder="رمز عبور را وارد کنید" disabled={false} {...field} />
+                    <Input type="password" placeholder="رمز عبور را وارد کنید" disabled={isPending} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button disabled={false} className="w-full rounded-lg" size="lg">
+            <Button disabled={isPending} className="w-full rounded-lg" size="lg">
               ورود
             </Button>
           </form>
@@ -73,11 +73,11 @@ function SignInCard() {
         <DottedSeparator />
       </div>
       <CardContent className="flex flex-col gap-y-4 p-7">
-        <Button disabled={false} variant="secondary" className="w-full rounded-lg" size="lg">
+        <Button disabled={isPending} variant="secondary" className="w-full rounded-lg" size="lg">
           <FcGoogle className="ml-2 size-5" />
           ورود با گوگل
         </Button>
-        <Button disabled={false} variant="secondary" className="w-full rounded-lg" size="lg">
+        <Button disabled={isPending} variant="secondary" className="w-full rounded-lg" size="lg">
           <FaGithub className="ml-2 size-5" />
           ورود با گیت هاب
         </Button>

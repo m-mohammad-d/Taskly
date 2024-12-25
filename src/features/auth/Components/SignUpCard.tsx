@@ -17,7 +17,7 @@ import { useRegister } from "../api/useRegister";
 type FormData = z.infer<typeof signUpSchema>;
 
 function SignUpCard() {
-  const { mutate } = useRegister();
+  const { mutate, isPending } = useRegister();
   const form = useForm<FormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -59,7 +59,7 @@ function SignUpCard() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="text" placeholder="نام خود را وارد کنید" disabled={false} {...field} />
+                    <Input type="text" placeholder="نام خود را وارد کنید" disabled={isPending} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -71,7 +71,7 @@ function SignUpCard() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="email" placeholder="ایمیل را وارد کنید" disabled={false} {...field} />
+                    <Input type="email" placeholder="ایمیل را وارد کنید" disabled={isPending} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -83,13 +83,13 @@ function SignUpCard() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="password" placeholder="رمز عبور را وارد کنید" disabled={false} {...field} />
+                    <Input type="password" placeholder="رمز عبور را وارد کنید" disabled={isPending} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button disabled={false} className="w-full rounded-lg" size="lg">
+            <Button disabled={isPending} className="w-full rounded-lg" size="lg">
               ورود
             </Button>
           </form>
@@ -99,11 +99,11 @@ function SignUpCard() {
         <DottedSeparator />
       </div>
       <CardContent className="flex flex-col gap-y-4 p-7">
-        <Button disabled={false} variant="secondary" className="w-full rounded-lg" size="lg">
+        <Button disabled={isPending} variant="secondary" className="w-full rounded-lg" size="lg">
           <FcGoogle className="ml-2 size-5" />
           ورود با گوگل
         </Button>
-        <Button disabled={false} variant="secondary" className="w-full rounded-lg" size="lg">
+        <Button disabled={isPending} variant="secondary" className="w-full rounded-lg" size="lg">
           <FaGithub className="ml-2 size-5" />
           ورود با گیت هاب
         </Button>
