@@ -1,24 +1,17 @@
-"use client";
-import Image from "next/image";
-import { Button } from "./ui/button";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import UserButton from "@/features/auth/Components/UserButton";
+import MobileSidebar from "./MobileSidebar";
 
-function NavBar() {
-  const pathname = usePathname();
-  const isSignIn = pathname === "/sign-in";
+function Navbar() {
   return (
-    <nav className="flex justify-between items-center">
-      <Image src="/logo.svg" width={152} height={60} alt="logo" />
-      <div className="flex items-center gap-2">
-        <Button asChild variant="secondary">
-          <Link href={isSignIn ? "/sign-up" : "sign-in"}>
-            {isSignIn ? "ثبت نام" : "ورود"}
-          </Link>
-        </Button>
+    <nav className="flex w-full items-center justify-between px-6 pt-4">
+      <div className="hidden flex-col lg:flex">
+        <h1 className="text-2xl font-semibold">خونه</h1>
+        <p className="text-muted-foreground">تمام پروژه‌ها و وظایف خود را اینجا مدیریت کنید.</p>
       </div>
+      <MobileSidebar />
+      <UserButton />
     </nav>
   );
 }
 
-export default NavBar;
+export default Navbar;
