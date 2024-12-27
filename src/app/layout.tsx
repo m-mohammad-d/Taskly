@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import QueryProvider from "@/components/QueryProvider";
+import { Toaster } from "@/components/ui/sonner";
 const shabnam = localFont({
   src: [
     {
@@ -37,7 +38,10 @@ export default function RootLayout({
           fontFamily: "var(--font-shabnam), var(--font-geist-sans), var(--font-geist-mono), Arial, sans-serif",
         }}
       >
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <Toaster />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );
