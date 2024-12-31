@@ -19,6 +19,7 @@ export function useRegister() {
       toast.success("تبریک! ثبت‌نام شما با موفقیت انجام شد. از اینکه به ما پیوستید سپاسگزاریم.");
       router.refresh();
       queryClient.invalidateQueries({ queryKey: ["current"] });
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
     },
     onError: () => {
       toast.error("ثبت‌نام شما با خطا مواجه شد. لطفاً دوباره تلاش کنید یا با پشتیبانی تماس بگیرید");

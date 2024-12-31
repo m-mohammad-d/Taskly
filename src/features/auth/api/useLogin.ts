@@ -19,6 +19,7 @@ export function useLogin() {
       toast.success("ورود به حساب کاربری با موفقیت انجام شد. خوش آمدید!");
       router.refresh();
       queryClient.invalidateQueries({ queryKey: ["current"] });
+      queryClient.invalidateQueries({ queryKey: ["workspaces"] });
     },
     onError: () => {
       toast.error("متأسفیم، مشکلی در ورود به حساب کاربری رخ داده است. لطفاً بعداً تلاش کنید");
