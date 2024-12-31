@@ -16,11 +16,13 @@ import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface CreateWorkspaceFormProps {
   onCancel: () => void;
 }
 function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
+  const router = useRouter();
   const { mutate, isPending } = useCreateWorkspace();
   const inputRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof createWorkspaceSchema>>({ resolver: zodResolver(createWorkspaceSchema), defaultValues: { name: "" } });
@@ -31,16 +33,16 @@ function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
       image: data.image instanceof File ? data.image : "",
     };
     mutate(finalValue, {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         form.reset();
+        // onCancel()
+        router.push(`/workspaces/${data.$id}`);
       },
     });
   };
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>): void {
     event.preventDefault();
     const file = event.target.files?.[0];
-    console.log(file);
-
     if (file) {
       const validFormatsRegex = /\.(jpeg|jpg|png|svg)$/i;
       const maxSize = 5 * 1024 * 1024;
