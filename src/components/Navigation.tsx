@@ -6,6 +6,7 @@ import { FaUsers } from "react-icons/fa";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useWorkspaceId } from "@/features/workSpaces/hooks/useWorkspaceId";
 
 const routes = [
   {
@@ -22,7 +23,7 @@ const routes = [
   },
   {
     label: "تنظیمات",
-    href: "/settings",
+    href: "/setting",
     icon: MdOutlineSettings,
     activeIcon: MdOutlineSettings,
   },
@@ -35,15 +36,17 @@ const routes = [
 ];
 
 function Navigation() {
+  const workspaceId = useWorkspaceId();
   const pathname = usePathname();
   return (
     <ul className="flex flex-col">
       {routes.map((route) => {
-        const isActive = pathname === route.href;
+        const fullHref = `/workspaces/${workspaceId}${route.href}`;
+        const isActive = pathname === fullHref;
         const Icon = isActive ? route.activeIcon : route.icon;
 
         return (
-          <Link href={route.href} key={route.href}>
+          <Link href={fullHref} key={fullHref}>
             <div className={cn("flex items-center gap-2.5 rounded-md p-2.5 font-medium text-neutral-500 transition hover:text-primary", isActive && "bg-white text-primary shadow-sm")}>
               <Icon className="size-5 text-neutral-500" />
               {route.label}
