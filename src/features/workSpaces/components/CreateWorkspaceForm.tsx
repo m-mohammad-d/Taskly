@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface CreateWorkspaceFormProps {
   onCancel?: () => void;
@@ -118,7 +119,7 @@ function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
             </div>
             <DottedSeparator className="py-7" />
             <div className="flex items-center justify-between">
-              <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="button" variant="secondary" onClick={() => onCancel?.()}>
+              <Button disabled={isPending} className={cn("w-full rounded-lg", !onCancel && "invisible")} size="lg" type="button" variant="secondary" onClick={() => onCancel?.()}>
                 لغو
               </Button>
               <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="submit">
