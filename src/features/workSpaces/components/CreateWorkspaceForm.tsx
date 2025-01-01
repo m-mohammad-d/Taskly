@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 interface CreateWorkspaceFormProps {
-  onCancel: () => void;
+  onCancel?: () => void;
 }
 function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
   const router = useRouter();
@@ -118,7 +118,7 @@ function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
             </div>
             <DottedSeparator className="py-7" />
             <div className="flex items-center justify-between">
-              <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="button" variant="secondary" onClick={() => onCancel()}>
+              <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="button" variant="secondary" onClick={() => onCancel?.()}>
                 لغو
               </Button>
               <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="submit">
