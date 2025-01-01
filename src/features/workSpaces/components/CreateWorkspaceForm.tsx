@@ -108,9 +108,27 @@ function CreateWorkspaceForm({ onCancel }: CreateWorkspaceFormProps) {
                         <p className="text-sm">ایکون فضای کاری</p>
                         <p className="text-sm text-muted-foreground">JPG , PNG , SVG or JPEG , max 5mb</p>
                         <input type="file" className="hidden" accept=".jpg,.jpeg,.png, .svg" ref={inputRef} onChange={handleImageChange} disabled={isPending} />
-                        <Button type="button" disabled={isPending} variant="teritary" size="xs" className="mt-2 w-fit" onClick={() => inputRef.current?.click()}>
-                          اپلود عکس
-                        </Button>
+                        {field.value ? (
+                          <Button
+                            type="button"
+                            disabled={isPending}
+                            variant="destructive"
+                            size="xs"
+                            className="mt-2 w-fit"
+                            onClick={() => {
+                              field.onChange(null);
+                              if (inputRef.current) {
+                                inputRef.current.value = "";
+                              }
+                            }}
+                          >
+                            حذف عکس
+                          </Button>
+                        ) : (
+                          <Button type="button" disabled={isPending} variant="teritary" size="xs" className="mt-2 w-fit" onClick={() => inputRef.current?.click()}>
+                            اپلود عکس
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </div>
