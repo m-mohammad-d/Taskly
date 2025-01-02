@@ -1,5 +1,5 @@
-import { getCurrent } from "@/features/auth/action";
-import { getWorkspaces } from "@/features/workSpaces/action";
+import { getCurrent } from "@/features/auth/queries";
+import { getWorkspaces } from "@/features/workSpaces/queris";
 import { redirect } from "next/navigation";
 export default async function Home() {
   const user = await getCurrent();

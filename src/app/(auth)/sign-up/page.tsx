@@ -1,4 +1,4 @@
-import { getCurrent } from "@/features/auth/action";
+import { getCurrent } from "@/features/auth/queries";
 import SignUpCard from "@/features/auth/Components/SignUpCard";
 import { redirect } from "next/navigation";
 
