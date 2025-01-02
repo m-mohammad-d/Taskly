@@ -14,13 +14,14 @@ import { useUpdateWorkspace } from "../api/useUpdateWorkspace";
 import { useRef } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRightIcon, ImageIcon } from "lucide-react";
+import { ArrowRightIcon, Copy, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { workspcae } from "@/types/workspace";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useDeleteWorkspace } from "../api/useDeleteWorkspace";
+import { useResetInviteCode } from "../api/useResetInviteCode";
 
 interface EditWorkspaceFormProps {
   onCancel?: () => void;
@@ -32,7 +33,13 @@ function EditWorkspaceForm({ onCancel, initialValue }: EditWorkspaceFormProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof updateWorkspaceSchema>>({ resolver: zodResolver(updateWorkspaceSchema), defaultValues: { ...initialValue, image: initialValue.imageUrl ?? "" } });
   const [DeleteDialog, confirmDelete] = useConfirm("حذف فضای کاری", "پس از انجام این عمل، امکان بازگشت وجود ندارد.", "destructive");
+  const [ResetInviteDialog, confirmReset] = useConfirm(
+    "ریست کد دعوت",
+    "آیا مطمئن هستید که می‌خواهید کد دعوت را ریست کنید؟ کد قبلی معتبر نخواهد بود و کاربران باید از کد جدید استفاده کنند.",
+    "destructive",
+  );
   const { mutate: deleteWorkspace, isPending: isDeleting } = useDeleteWorkspace();
+  const { mutate: resetInviteCode, isPending: isResettingInviteCode } = useResetInviteCode();
   const onSubmit = (data: z.infer<typeof updateWorkspaceSchema>) => {
     const finalValue = {
       ...data,
@@ -85,9 +92,33 @@ function EditWorkspaceForm({ onCancel, initialValue }: EditWorkspaceFormProps) {
     );
   };
 
+  const fullInviteLink = `${window.location.origin}/workspaces/${initialValue.$id}/join/${initialValue.inviteCode}`;
+
+  function handleCopyInviteLink(): void {
+    navigator.clipboard.writeText(fullInviteLink).then(() => {
+      toast.success("لینک دعوت با موفقیت به کلیپ‌بورد کپی شد");
+    });
+  }
+
+  async function handleResetInviteCode() {
+    const ok = await confirmReset();
+
+    if (!ok) return;
+
+    resetInviteCode(
+      { param: { workspaceId: initialValue.$id } },
+      {
+        onSuccess: () => {
+          router.refresh();
+        },
+      },
+    );
+  }
+
   return (
     <div className="flex flex-col gap-y-4">
       <DeleteDialog />
+      <ResetInviteDialog />
       <Card className="h-full w-full border-none shadow-none">
         <CardHeader className="flex flex-row items-center gap-x-4 space-y-0 p-7">
           <Button className="" size="xs" variant="secondary" onClick={onCancel ? onCancel : () => router.push(`/workspaces/${initialValue.$id}`)}>
@@ -177,6 +208,28 @@ function EditWorkspaceForm({ onCancel, initialValue }: EditWorkspaceFormProps) {
           </Form>
         </CardContent>
       </Card>
+
+      <Card className="h-full w-full border-none shadow-none">
+        <CardContent className="p-7">
+          <div className="flex flex-col">
+            <h3>کد دعوت</h3>
+            <p className="text-sm text-muted-foreground">از این کد دعوت می‌توانید برای افزودن اعضای جدید به فضای کاری استفاده کنید. در صورت نیاز، می‌توانید کد دعوت را بازنشانی کنید.</p>
+            <div className="mt-4">
+              <div className="flex items-center gap-x-2">
+                <Input className="w-full max-w-md" readOnly disabled value={fullInviteLink} />
+                <Button className="ml-4" size="sm" variant="secondary" type="button" onClick={handleCopyInviteLink}>
+                  <Copy />
+                </Button>
+              </div>
+            </div>
+            <DottedSeparator className="py-7" />
+            <Button className="ml-auto w-fit" size="sm" variant="destructive" type="button" disabled={isResettingInviteCode || isPending} onClick={handleResetInviteCode}>
+              بازنشانی کد دعوت
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="h-full w-full border-none shadow-none">
         <CardContent className="p-7">
           <div className="flex flex-col">
@@ -184,7 +237,8 @@ function EditWorkspaceForm({ onCancel, initialValue }: EditWorkspaceFormProps) {
             <p className="text-sm text-muted-foreground">
               با حذف این فضای کاری، تمامی تسک‌ها، اعضا و داده‌های مرتبط با آن به‌طور دائمی حذف خواهند شد. این اقدام غیرقابل بازگشت است، لطفاً با دقت تصمیم‌گیری کنید.
             </p>
-            <Button className="ml-auto mt-6 w-fit" size="sm" variant="destructive" type="button" disabled={isDeleting || isPending} onClick={handleDelete}>
+            <DottedSeparator className="py-7" />
+            <Button className="ml-auto w-fit" size="sm" variant="destructive" type="button" disabled={isDeleting || isPending} onClick={handleDelete}>
               حذف فضای کاری
             </Button>
           </div>
