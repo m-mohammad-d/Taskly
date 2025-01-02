@@ -82,6 +82,22 @@ const app = new Hono()
     const workspaces = await databases.updateDocument(DATABASE_ID, WORKSPACES_ID, workspaceId, { name, imageUrl: uploadedImageUrl });
 
     return c.json({ data: workspaces });
+  })
+  .delete("/:workspaceId", sessionMiddleware, async (c) => {
+    const databases = c.get("databases");
+    const user = c.get("user");
+
+    const { workspaceId } = c.req.param();
+
+    const member = await getMember({ databases, workspaceId, userId: user.$id });
+
+    if (!member || member.role !== MemberRole.admin) {
+      return c.json({ error: "احراز هویت نشده" }, 401);
+    }
+
+    await databases.deleteDocument(DATABASE_ID, WORKSPACES_ID, workspaceId);
+
+    return c.json({ data: { $id: workspaceId } });
   });
 
 export default app;
