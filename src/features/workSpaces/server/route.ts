@@ -4,9 +4,11 @@ import { getMember } from "@/features/members/utils";
 import { sessionMiddleware } from "@/lib/sessionMiddleware";
 import { generateInviteCode } from "@/lib/utils";
 import { createWorkspaceSchema, updateWorkspaceSchema } from "@/schema/workspaces";
+import { workspcae } from "@/types/workspace";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { ID, Query } from "node-appwrite";
+import { z } from "zod";
 
 const app = new Hono()
   .get("/", sessionMiddleware, async (c) => {
@@ -112,6 +114,29 @@ const app = new Hono()
     }
 
     const workspace = await databases.updateDocument(DATABASE_ID, WORKSPACES_ID, workspaceId, { inviteCode: generateInviteCode(15) });
+
+    return c.json({ data: workspace });
+  })
+  .post("/:workspaceId/join", sessionMiddleware, zValidator("json", z.object({ code: z.string() })), async (c) => {
+    const { workspaceId } = c.req.param();
+    const { code } = c.req.valid("json");
+
+    const databases = c.get("databases");
+    const user = c.get("user");
+
+    const member = await getMember({ databases, workspaceId, userId: user.$id });
+
+    if (member) {
+      return c.json({ error: "در حال حاظر کاربر عضو فضای کاری هست" }, 400);
+    }
+
+    const workspace = await databases.getDocument<workspcae>(DATABASE_ID, WORKSPACES_ID, workspaceId);
+
+    if (workspace.inviteCode !== code) {
+      return c.json({ error: "کد دعوت نامعتبر هست" }, 400);
+    }
+
+    await databases.createDocument(DATABASE_ID, MEMBERS_ID, ID.unique(), { workspaceId, userId: user.$id, role: MemberRole.member });
 
     return c.json({ data: workspace });
   });
