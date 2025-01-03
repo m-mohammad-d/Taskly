@@ -8,7 +8,7 @@ async function page() {
   if (!user) redirect("/sign-in");
   return (
     <div className="w-full lg:max-w-xl">
-      <MembersList />
+      <MembersList userId={user.$id} />
     </div>
   );
 }

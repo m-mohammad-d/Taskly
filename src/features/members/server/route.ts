@@ -29,6 +29,8 @@ const app = new Hono()
         const user = await users.get(member.userId);
         return {
           ...member,
+          role: member.role,
+          userId: member.userId,
           name: user.name,
           email: user.email,
         };

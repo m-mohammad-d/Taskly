@@ -16,13 +16,16 @@ import { useDeleteMember } from "@/features/members/api/useDeleteMember";
 import { useUpdateMember } from "@/features/members/api/useUpdateMember";
 import { MemberRole } from "@/features/members/types";
 import { useConfirm } from "@/hooks/useConfirm";
-
-function MembersList() {
+interface MembersListProps {
+  userId: string;
+}
+function MembersList({ userId }: MembersListProps) {
   const workspaceId = useWorkspaceId();
   const { data } = useGetMembers({ workspaceId });
   const { mutate: deleteMember, isPending: isDeleting } = useDeleteMember();
   const { mutate: updateMember, isPending: isUpdating } = useUpdateMember();
   const [ConfirmDialog, confirm] = useConfirm("آیا از حذف این عضو مطمئن هستید؟", "این عمل غیرقابل بازگشت است و تمام اطلاعات مرتبط حذف خواهد شد.", "destructive");
+  const currentUserMember = data?.documents.find((member) => member.userId === userId);
 
   async function handleDeleteMember(memberId: string) {
     const ok = await confirm();
@@ -66,27 +69,30 @@ function MembersList() {
               <MemberAvatar className="size-10" name={member.name} fallbackClassName="text-lg" />
               <div className="flex flex-col">
                 <p className="text-sm font-medium">{member.name}</p>
+                <p>{member.role}</p>
                 <p className="text-xs text-muted-foreground">{member.email}</p>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="secondary" className="mr-auto" size="icon">
-                    <MoreVerticalIcon className="size-4 text-muted-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="bottom" align="end">
-                  <DropdownMenuItem className="font-medium" onClick={() => handleUpdateMember(member.$id, MemberRole.member)} disabled={isUpdating}>
-                    تنظیم به عنوان ادمین
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="font-medium" onClick={() => handleUpdateMember(member.$id, MemberRole.member)} disabled={isUpdating}>
-                    تنظیم به عنوان عضو
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="font-medium text-red-500" onClick={() => handleDeleteMember(member.$id)} disabled={isDeleting}>
-                    <MdOutlineDeleteOutline />
-                    {member.name} حذف
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {member.userId !== userId && currentUserMember?.role === MemberRole.admin && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="secondary" className="mr-auto" size="icon">
+                      <MoreVerticalIcon className="size-4 text-muted-foreground" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="bottom" align="end">
+                    <DropdownMenuItem className="font-medium" onClick={() => handleUpdateMember(member.$id, MemberRole.admin)} disabled={isUpdating}>
+                      تنظیم به عنوان ادمین
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="font-medium" onClick={() => handleUpdateMember(member.$id, MemberRole.member)} disabled={isUpdating}>
+                      تنظیم به عنوان عضو
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="font-medium text-red-500" onClick={() => handleDeleteMember(member.$id)} disabled={isDeleting}>
+                      <MdOutlineDeleteOutline />
+                      {member.name} حذف
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
             {index < data.documents.length - 1 && <Separator className="my-2.5 text-neutral-300" />}
           </Fragment>
