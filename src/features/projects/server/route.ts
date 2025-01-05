@@ -1,7 +1,8 @@
 import { DATABASE_ID, IMAGES_BUCKET_ID, PROJECTS_ID } from "@/config";
 import { getMember } from "@/features/members/utils";
 import { sessionMiddleware } from "@/lib/sessionMiddleware";
-import { createProjectSchema } from "@/schema/projects";
+import { createProjectSchema, updateProjectSchema } from "@/schema/projects";
+import { Project } from "@/types/projects";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { ID, Query } from "node-appwrite";
@@ -52,6 +53,36 @@ const app = new Hono()
       imageUrl: uploadedImageUrl,
       workspaceId,
     });
+    return c.json({ data: project });
+  })
+  .patch("/:projectId", sessionMiddleware, zValidator("form", updateProjectSchema), async (c) => {
+    const databases = c.get("databases");
+    const storage = c.get("storage");
+    const user = c.get("user");
+    const { projectId } = c.req.param();
+
+    const existingProject = await databases.getDocument<Project>(DATABASE_ID, PROJECTS_ID, projectId);
+    const { name, image } = c.req.valid("form");
+
+    const member = await getMember({ databases, workspaceId: existingProject.workspaceId, userId: user.$id });
+
+    if (!member) {
+      return c.json({ error: "احراز هویت نشده" }, 401);
+    }
+
+    let uploadedImageUrl: string | undefined;
+    if (image instanceof File) {
+      const file = await storage.createFile(IMAGES_BUCKET_ID, ID.unique(), image);
+
+      const arrayBuffer = await storage.getFilePreview(IMAGES_BUCKET_ID, file.$id);
+
+      uploadedImageUrl = `data:image/png;base64,${Buffer.from(arrayBuffer).toString("base64")}`;
+    } else {
+      uploadedImageUrl = image;
+    }
+
+    const project = await databases.updateDocument(DATABASE_ID, PROJECTS_ID, projectId, { name, imageUrl: uploadedImageUrl });
+
     return c.json({ data: project });
   });
 

@@ -21,7 +21,7 @@ function Projects() {
         <RiAddCircleFill onClick={open} className="size-5 cursor-pointer text-neutral-500 transition hover:opacity-70" />
       </div>
       {data?.documents.map((project) => {
-        const href = `/workspaces/${workspaceId}/project/${project.$id}`;
+        const href = `/workspaces/${workspaceId}/projects/${project.$id}`;
         const isActive = pathName === href;
 
         return (
