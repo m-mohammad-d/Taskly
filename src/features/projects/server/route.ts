@@ -1,4 +1,5 @@
 import { DATABASE_ID, IMAGES_BUCKET_ID, PROJECTS_ID } from "@/config";
+import { MemberRole } from "@/features/members/types";
 import { getMember } from "@/features/members/utils";
 import { sessionMiddleware } from "@/lib/sessionMiddleware";
 import { createProjectSchema, updateProjectSchema } from "@/schema/projects";
@@ -84,6 +85,23 @@ const app = new Hono()
     const project = await databases.updateDocument(DATABASE_ID, PROJECTS_ID, projectId, { name, imageUrl: uploadedImageUrl });
 
     return c.json({ data: project });
+  })
+  .delete("/:projectId", sessionMiddleware, async (c) => {
+    const databases = c.get("databases");
+    const user = c.get("user");
+
+    const { projectId } = c.req.param();
+    const existingProject = await databases.getDocument<Project>(DATABASE_ID, PROJECTS_ID, projectId);
+
+    const member = await getMember({ databases, workspaceId: existingProject.workspaceId, userId: user.$id });
+
+    if (!member || member.role !== MemberRole.admin) {
+      return c.json({ error: "احراز هویت نشده" }, 401);
+    }
+
+    await databases.deleteDocument(DATABASE_ID, PROJECTS_ID, projectId);
+
+    return c.json({ data: { $id: projectId } });
   });
 
 export default app;

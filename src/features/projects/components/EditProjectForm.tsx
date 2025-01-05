@@ -19,6 +19,7 @@ import { useConfirm } from "@/hooks/useConfirm";
 import { updateProjectSchema } from "@/schema/projects";
 import { useUpdateProject } from "../api/useUpdateProject";
 import { Project } from "@/types/projects";
+import { useDeleteProject } from "../api/useDeleteProject";
 
 interface EditProjectFormProps {
   onCancel?: () => void;
@@ -29,10 +30,9 @@ function EditProjectForm({ onCancel, initialValue }: EditProjectFormProps) {
   const { mutate, isPending } = useUpdateProject();
   const inputRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof updateProjectSchema>>({ resolver: zodResolver(updateProjectSchema), defaultValues: { ...initialValue, image: initialValue.imageUrl ?? "" } });
-  const [DeleteDialog, confirmDelete] = useConfirm("حذف فضای کاری", "پس از انجام این عمل، امکان بازگشت وجود ندارد.", "destructive");
+  const [DeleteDialog, confirmDelete] = useConfirm("حذف  پروژه", "پس از انجام این عمل، امکان بازگشت وجود ندارد.", "destructive");
 
-  // const { mutate: deleteWorkspace, isPending: isDeleting } = useDeleteWorkspace();
-  // const { mutate: resetInviteCode, isPending: isResettingInviteCode } = useResetInviteCode();
+  const { mutate: deleteProject, isPending: isDeleting } = useDeleteProject();
   const onSubmit = (data: z.infer<typeof updateProjectSchema>) => {
     const finalValue = {
       ...data,
@@ -75,14 +75,14 @@ function EditProjectForm({ onCancel, initialValue }: EditProjectFormProps) {
 
     if (!ok) return;
 
-    // deleteWorkspace(
-    //   { param: { projectId: initialValue.$id } },
-    //   {
-    //     onSuccess: () => {
-    //       router.push("/");
-    //     },
-    //   },
-    // );
+    deleteProject(
+      { param: { projectId: initialValue.$id } },
+      {
+        onSuccess: () => {
+          router.push(`/workspaces/${initialValue.workspaceId}`);
+        },
+      },
+    );
   };
 
   return (
@@ -166,10 +166,10 @@ function EditProjectForm({ onCancel, initialValue }: EditProjectFormProps) {
               </div>
               <DottedSeparator className="py-7" />
               <div className="flex items-center justify-between">
-                <Button disabled={isPending} className={cn("w-full rounded-lg", !onCancel && "invisible")} size="lg" type="button" variant="secondary" onClick={() => onCancel?.()}>
+                <Button disabled={isPending || isDeleting} className={cn("w-full rounded-lg", !onCancel && "invisible")} size="lg" type="button" variant="secondary" onClick={() => onCancel?.()}>
                   لغو
                 </Button>
-                <Button disabled={isPending} className="w-full rounded-lg" size="lg" type="submit">
+                <Button disabled={isPending || isDeleting} className="w-full rounded-lg" size="lg" type="submit">
                   ذخیره تغییرات
                 </Button>
               </div>
