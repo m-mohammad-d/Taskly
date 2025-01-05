@@ -18,15 +18,14 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createProjectSchema } from "@/schema/projects";
 import { useWorkspaceId } from "@/features/workSpaces/hooks/useWorkspaceId";
-import { useCreateProjectModal } from "../hooks/useCreateProjectModal";
-
+import { useRouter } from "next/navigation";
 interface CreateProjectFormProps {
   onCancel?: () => void;
 }
 function CreateProjectForm({ onCancel }: CreateProjectFormProps) {
+  const router = useRouter();
   const workspaceId = useWorkspaceId();
   const { mutate, isPending } = useCreateProjects();
-  const { close } = useCreateProjectModal();
   const inputRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof createProjectSchema>>({ resolver: zodResolver(createProjectSchema.omit({ workspaceId: true })), defaultValues: { name: "" } });
 
@@ -37,9 +36,9 @@ function CreateProjectForm({ onCancel }: CreateProjectFormProps) {
       image: data.image instanceof File ? data.image : "",
     };
     mutate(finalValue, {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
         form.reset();
-        close();
+        router.push(`/workspaces/${workspaceId}/projects/${data.$id}`);
       },
     });
   };
