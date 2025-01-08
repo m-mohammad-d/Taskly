@@ -1,9 +1,12 @@
+"use client";
 import DottedSeparator from "@/components/DottedSeparator";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusIcon } from "lucide-react";
+import { useCreateTaskModal } from "../hooks/useCreateTaskModal";
 
 function TaskViewSwitcher() {
+  const { open } = useCreateTaskModal();
   return (
     <Tabs className="w-full flex-1 rounded-lg border">
       <div className="flex h-full flex-col overflow-auto p-4">
@@ -19,7 +22,7 @@ function TaskViewSwitcher() {
               تقویم
             </TabsTrigger>
           </TabsList>
-          <Button className="h-8 w-full lg:w-auto">
+          <Button className="h-8 w-full lg:w-auto" onClick={open}>
             <PlusIcon className="ml-2 size-4" />
             تسک جدید
           </Button>

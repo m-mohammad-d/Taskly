@@ -1,7 +1,7 @@
 export enum TaskStatus {
-  BACKLOG = "لیست وظایف آینده",
-  TODO = "وظایف برای انجام",
+  BACKLOG = "وظایف معلق",
+  TODO = "وظایف در دست انجام",
   IN_PROGRESS = "در حال انجام",
-  IN_REVIEW = "در حال بررسی",
-  DONE = "انجام شده",
+  IN_REVIEW = "در حال بازبینی",
+  DONE = "تمام شده",
 }
