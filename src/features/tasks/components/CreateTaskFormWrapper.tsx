@@ -19,7 +19,7 @@ function CreateTaskFormWrapper({ onCancel }: CreateTaskFormWrapperProps) {
     imageUrl: project.imageUrl,
   }));
   const memberOptions = members?.documents.map((member) => ({
-    id: member.$id,
+    id: member.userId,
     name: member.name,
   }));
 

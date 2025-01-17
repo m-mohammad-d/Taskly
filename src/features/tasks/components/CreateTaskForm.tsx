@@ -24,7 +24,7 @@ interface CreateTaskFormProps {
   projectOptions: { id: string; name: string; imageUrl: string }[];
   memberOptions: { id: string; name: string }[];
 }
-function CreateTaskForm({ , projectOptions, memberOptions }: CreateTaskFormProps) {
+function CreateTaskForm({ onCancel, projectOptions, memberOptions }: CreateTaskFormProps) {
   const workspaceId = useWorkspaceId();
   const { mutate, isPending } = useCreateTask();
   const form = useForm<z.infer<typeof createTaskSchema>>({ resolver: zodResolver(createTaskSchema.omit({ workspaceId: true })), defaultValues: { workspaceId } });
@@ -35,7 +35,7 @@ function CreateTaskForm({ , projectOptions, memberOptions }: CreateTaskFormProps
       {
         onSuccess: () => {
           form.reset();
-          onCancel()
+          onCancel?.();
         },
       },
     );
