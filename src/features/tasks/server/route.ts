@@ -11,6 +11,20 @@ import { ID, Query } from "node-appwrite";
 import { z } from "zod";
 
 const app = new Hono()
+  .delete("/:taskId", sessionMiddleware, async (c) => {
+    const databases = c.get("databases");
+    const user = c.get("user");
+    const { taskId } = c.req.param();
+    const task = await databases.getDocument<Task>(DATABASE_ID, TASKS_ID, taskId);
+    const member = await getMember({ databases, workspaceId: task.workspaceId, userId: user.$id });
+    if (!member) {
+      return c.json({ error: "احراز هویت نشده" }, 401);
+    }
+
+    await databases.deleteDocument(DATABASE_ID, TASKS_ID, taskId);
+
+    return c.json({ data: { $id: taskId } });
+  })
   .get(
     "/",
     sessionMiddleware,
