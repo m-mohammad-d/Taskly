@@ -4,6 +4,7 @@ import { ExternalLinkIcon, PencilIcon, TrashIcon } from "lucide-react";
 import { useDeleteTask } from "../api/useDeleteTask";
 import { useRouter } from "next/navigation";
 import { useWorkspaceId } from "@/features/workSpaces/hooks/useWorkspaceId";
+import { useEditTaskModal } from "../hooks/useEditTaskModal";
 
 interface TaskActionsProps {
   id: string;
@@ -14,6 +15,7 @@ interface TaskActionsProps {
 function TaskActions({ id, projectId, children }: TaskActionsProps) {
   const workspaceId = useWorkspaceId();
   const router = useRouter();
+  const { open } = useEditTaskModal();
   const [ConfirmDialog, confirm] = useConfirm("تأیید حذف وظیفه", "این عملیات قابل بازگشت نیست. آیا مطمئن هستید که می‌خواهید ادامه دهید؟", "destructive");
   const { mutate, isPending } = useDeleteTask();
   const onDelete = async () => {
@@ -39,7 +41,7 @@ function TaskActions({ id, projectId, children }: TaskActionsProps) {
             <ExternalLinkIcon className="mr-2 size-4 stroke-2" />
             جزئیات وضعیت
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => {}} disabled={isPending} className="p-[10px]">
+          <DropdownMenuItem onClick={() => open(id)} disabled={isPending} className="p-[10px]">
             <PencilIcon className="mr-2 size-4 stroke-2" />
             ویرایش وضعیت
           </DropdownMenuItem>
